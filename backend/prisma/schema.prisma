@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int           @id @default(autoincrement())
+  name       String
+  email      String        @unique
+  password   String
+  role       String        @default("user")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  groups     Group[]       @relation("GroupCreator")
+  members    GroupMember[]
+  expenses   Expense[]     @relation("ExpensePayer")
+  splits     Split[]
+  budgets    Budget[]
+
+  @@map("users")
+}
+
+model Group {
+  id         Int           @id @default(autoincrement())
+  name       String
+  createdBy  Int           @map("created_by")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  creator    User          @relation("GroupCreator", fields: [createdBy], references: [id])
+  members    GroupMember[]
+  expenses   Expense[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id         Int   @id @default(autoincrement())
+  groupId    Int   @map("group_id")
+  userId     Int   @map("user_id")
+
+  group      Group @relation(fields: [groupId], references: [id])
+  user       User  @relation(fields: [userId], references: [id])
+
+  @@map("group_members")
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  groupId     Int      @map("group_id")
+  paidBy      Int      @map("paid_by")
+  amount      Float
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  group       Group    @relation(fields: [groupId], references: [id])
+  payer       User     @relation("ExpensePayer", fields: [paidBy], references: [id])
+  splits      Split[]
+
+  @@map("expenses")
+}
+
+model Split {
+  id          Int   @id @default(autoincrement())
+  expenseId   Int   @map("expense_id")
+  userId      Int   @map("user_id")
+  amountOwed  Float @map("amount_owed")
+
+  expense     Expense @relation(fields: [expenseId], references: [id])
+  user        User    @relation(fields: [userId], references: [id])
+
+  @@map("splits")
+}
+
+model Budget {
+  id           Int    @id @default(autoincrement())
+  userId       Int    @map("user_id")
+  monthlyLimit Float  @map("monthly_limit")
+  month        String
+
+  user         User   @relation(fields: [userId], references: [id])
+
+  @@map("budgets")
+}
