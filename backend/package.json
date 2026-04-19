@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/app.js",
-    "build": "tsc",
-    "postinstall": "prisma generate",
+    "build": "npx tsc && ls dist/",
+    "postinstall": "npx prisma generate",
     "dev": "nodemon src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
