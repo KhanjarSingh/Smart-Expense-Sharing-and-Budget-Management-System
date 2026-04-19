@@ -14,7 +14,8 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const url = isRegister ? 'http://localhost:5001/api/register' : 'http://localhost:5001/api/login';
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      const url = isRegister ? `${baseUrl}/register` : `${baseUrl}/login`;
       const payload = isRegister ? { name, email, password } : { email, password };
       const res = await axios.post(url, payload);
       

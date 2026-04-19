@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
 export default function GroupView() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -21,7 +23,6 @@ export default function GroupView() {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
       const [membersRes, balancesRes, historyRes, settlementsRes] = await Promise.all([
         axios.get(`${baseUrl}/groups/${id}/members`, config),
         axios.get(`${baseUrl}/groups/${id}/balances`, config),
@@ -49,7 +50,6 @@ export default function GroupView() {
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
       await axios.post(`${baseUrl}/expenses`, {
         groupId: parseInt(id),
         amount: parseFloat(amount),

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+
 export default function Dashboard() {
   const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState('');
@@ -20,14 +22,14 @@ export default function Dashboard() {
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
       try {
-        const groupsRes = await axios.get('http://localhost:5001/api/groups', config);
+        const groupsRes = await axios.get(`${baseUrl}/groups`, config);
         setGroups(groupsRes.data);
       } catch (err) {
         console.error('Groups fetch failed', err);
       }
 
       try {
-        const budgetRes = await axios.get(`http://localhost:5001/api/budget/status?month=${currentMonth}`, config);
+        const budgetRes = await axios.get(`${baseUrl}/budget/status?month=${currentMonth}`, config);
         setBudgetStatus(budgetRes.data);
       } catch (err) {
         console.error('Budget fetch failed', err);
@@ -36,7 +38,7 @@ export default function Dashboard() {
       setLoading(false);
     };
     fetchData();
-  }, [navigate, currentMonth, baseUrl]);
+  }, [navigate, currentMonth]);
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
@@ -60,7 +62,6 @@ export default function Dashboard() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
       await axios.post(`${baseUrl}/groups/join`, { groupId: joinGroupId }, {
         headers: { Authorization: `Bearer ${token}` }
       });
