@@ -36,14 +36,14 @@ export default function Dashboard() {
       setLoading(false);
     };
     fetchData();
-  }, [navigate, currentMonth]);
+  }, [navigate, currentMonth, baseUrl]);
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     setActionLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5001/api/groups', { name: newGroupName }, {
+      const res = await axios.post(`${baseUrl}/groups`, { name: newGroupName }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setGroups([...groups, res.data]);
@@ -60,7 +60,8 @@ export default function Dashboard() {
     setActionLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5001/api/groups/join', { groupId: joinGroupId }, {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      await axios.post(`${baseUrl}/groups/join`, { groupId: joinGroupId }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       window.location.reload(); 

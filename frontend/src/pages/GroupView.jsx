@@ -21,11 +21,12 @@ export default function GroupView() {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
       const [membersRes, balancesRes, historyRes, settlementsRes] = await Promise.all([
-        axios.get(`http://localhost:5001/api/groups/${id}/members`, config),
-        axios.get(`http://localhost:5001/api/groups/${id}/balances`, config),
-        axios.get(`http://localhost:5001/api/groups/${id}/expenses`, config),
-        axios.get(`http://localhost:5001/api/groups/${id}/settlements`, config)
+        axios.get(`${baseUrl}/groups/${id}/members`, config),
+        axios.get(`${baseUrl}/groups/${id}/balances`, config),
+        axios.get(`${baseUrl}/groups/${id}/expenses`, config),
+        axios.get(`${baseUrl}/groups/${id}/settlements`, config)
       ]);
       
       setMembers(membersRes.data.members);
@@ -48,7 +49,8 @@ export default function GroupView() {
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5001/api/expenses', {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+      await axios.post(`${baseUrl}/expenses`, {
         groupId: parseInt(id),
         amount: parseFloat(amount),
         description,
